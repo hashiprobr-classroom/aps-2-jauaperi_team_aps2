@@ -90,9 +90,85 @@ void fft_inverse(complex t[], complex s[], int n) {
 }
 
 void fft_forward_2d(complex matrix[MAX_SIZE][MAX_SIZE], int width, int height) {
+    complex l[width];
+
+    // Para cada linha da matriz
+    for (int j = 0; j < height; j++){ // percorro linha por linha
+        // Cria sinal com dados da linha
+        for (int i = 0; i < width; i++){ 
+            l[i] = matrix[j][i];
+        }
+
+        // Calcula transformada
+        complex t[width];
+        fft_forward(l, t, width);
+        
+        // Atualiza a propria matriz com a transformada
+        for (int i = 0; i < width; i++){ 
+            matrix[j][i] = t[i]; 
+        }
+    }
+
+    complex c[height];
+
+    // Para cada coluna da matriz
+    for (int i = 0; i < width; i++){
+        // Cria sinal com dados da coluna
+        for (int j = 0; j < height; j++){
+            c[j] = matrix[j][i];
+        }
+
+        // Calcula transformada
+        complex t[height];
+        fft_forward(c, t, height);
+
+        // Atualiza a propria matriz com a transformada
+        for (int j = 0; j < height; j++){
+            matrix[j][i] = t[j];
+        }
+    } 
+    
 }
 
 void fft_inverse_2d(complex matrix[MAX_SIZE][MAX_SIZE], int width, int height) {
+    complex c[height];
+
+    // Para cada coluna da matriz
+    for (int i = 0; i < width; i++){
+        // Cria sinal com dados da coluna
+        for (int j = 0; j < height; j++){
+            c[j] = matrix[j][i];
+        }
+
+        // Calcula transformada
+        complex t[height];
+        fft_inverse(c, t, height);
+
+        // Atualiza a propria matriz com a transformada
+        for (int j = 0; j < height; j++){
+            matrix[j][i] = t[j];
+        }
+    }     
+
+    complex l[width];
+
+    // Para cada linha da matriz
+    for (int j = 0; j < height; j++){ // percorro linha por linha
+        // Cria sinal com dados da linha
+        for (int i = 0; i < width; i++){ 
+            l[i] = matrix[j][i]; 
+        }
+
+        // Calcula transformada
+        complex t[width];
+        fft_inverse(l, t, width);
+        
+        // Atualiza a propria matriz com a transformada
+        for (int i = 0; i < width; i++){ 
+            matrix[j][i] = t[i]; 
+        }
+    }
+
 }
 
 void filter(complex input[MAX_SIZE][MAX_SIZE], complex output[MAX_SIZE][MAX_SIZE], int width, int height, int flip) {
