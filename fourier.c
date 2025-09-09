@@ -36,8 +36,12 @@ void nft_inverse(complex t[], complex s[], int n) {
 }
 
 void fft(complex s[], complex t[], int n, int sign) {
-    // 1. Construir um sinal sp de tamanho n/2 cujos elementos são
-    //    aqueles nos índices pares de s
+    if (n == 1){ // Condicao de parada da recursao (quando o vetor s possuir tamanho 1)
+        t[0] = s[0]; 
+        return ;
+    }
+
+    // Constroi o sinal sp de tamanho n/2 (apenas com os indices pares de s)
     complex sp[n/2];
     for (int i = 0; i < n; i++){
         if (i % 2 == 0){
@@ -45,37 +49,34 @@ void fft(complex s[], complex t[], int n, int sign) {
         }
     }
 
-    // 2. Construir um sinal si de tamanho n/2 cujos elementos são
-    //    aqueles nos índices ímpares de s
+    // Constroi o sinal si de tamanho n/2 (apenas com os indices impares de s)
     complex si[n/2];
     for (int i = 0; i < n; i++){
         if (i % 2 != 0){
-            si[(i-1)/2] = s[i]
+            si[(i-1)/2] = s[i];
         }
     }
 
+    // Declara tp e ti
     complex tp[n/2];
     complex ti[n/2];
-    // 3. Obter recursivamente a transformada de Fourier tp do sinal sp
-    fft(sp, tp, n/2, sign);
-
-    // 4. Obter recursivamente a transformada de Fourier ti do sinal ti
-    fft(si, ti, n/2, sign);
-
-    // 5. Olhar no enunciado (Construir um sinal t de tamanho n)
+    // Calcula tp e ti com a recursividade
+    fft(sp, tp, n/2, sign); // (Observe que diminuimos o tamanho do vetor pela metade)
+    fft(si, ti, n/2, sign); 
 
 
+    // Aqui calculamos o sinal t de tamanho n
     for (int k = 0; k < n/2; k++){
-        double x = sign * 2 * PI * k / n;
+        double x = sign * 2 * PI * k / n; // Declara x
 
         double cosx = cos(x);
         double sinx = sin(x);
 
-        t[k].a = tp[k].a + (ti[k].a * cosx - ti[k].b * sinx);
-        t[k].b = tp[k].b + (ti[k].a * sinx + ti[k].b * cosx);
+        t[k].a = tp[k].a + (ti[k].a * cosx - ti[k].b * sinx); // Parte real de t (do indice 0 ao (n/2)-1)
+        t[k].b = tp[k].b + (ti[k].a * sinx + ti[k].b * cosx); // Parte imaginaria de t (do indice 0 ao (n/2)-1)
 
-        t[k+(n/2)].a = tp[k].a - (ti[k].a * cosx - ti[k].b * sinx);
-        t[k+(n/2)].b = tp[k].a - (ti[k].a * sinx + ti[k].b * cosx);
+        t[k+(n/2)].a = tp[k].a - (ti[k].a * cosx - ti[k].b * sinx); // Parte real de t (do indice n/2 ao n-1)
+        t[k+(n/2)].b = tp[k].b - (ti[k].a * sinx + ti[k].b * cosx); // Parte imaginaria de t (do indice n/2 ao n-1)
     }
 }
 
